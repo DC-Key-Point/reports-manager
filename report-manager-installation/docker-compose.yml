@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  samba:
+    image: dockurr/samba
+    container_name: samba
+    environment:
+      NAME: "Data"
+      USER: "samba"
+      PASS: "secret"
+    ports:
+      - 445:445
+    volumes:
+      - ./samba-storage:/storage
+    restart: always
+
+  onlyoffice:
+    image: onlyoffice/documentserver
+    container_name: onlyoffice
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./onlyoffice_data:/var/www/onlyoffice/Data
+    environment:
+      - JWT_ENABLED=false
+
+  mongodb:
+    image: mongodb/mongodb-community-server
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ulimits:
+      nofile:
+        soft: 256
+        hard: 512 # max соединений
